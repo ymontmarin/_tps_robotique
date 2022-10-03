@@ -1,0 +1,14 @@
+name: ens2022
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.9
+  - pinocchio
+  - meshcat-python
+  - example-robot-data
+  - jupyterlab
+  - matplotlib
+  - scipy
+  - quadprog
+  - crocoddyl
