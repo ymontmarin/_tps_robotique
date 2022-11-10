@@ -46,3 +46,8 @@ Meshcat visualisation can be access in full page in `localhost:700N/static/` whe
 If the repository changes (for example when new tutorials are pushes), you need to update your local
 version by "pulling" it from the repository.
 On a native installation, just go in the folder containing the tutorials and execute ```git pull```.
+
+
+# TODO
+- Update from running TPs
+- Clear all output for pushed version
