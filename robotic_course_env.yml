@@ -1,4 +1,4 @@
-name: ens2022
+name: robotic_course
 channels:
   - conda-forge
   - defaults
