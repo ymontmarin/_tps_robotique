@@ -8,6 +8,7 @@ dependencies:
   - meshcat-python
   - example-robot-data
   - jupyterlab
+  - ipywidgets
   - matplotlib
   - scipy
   - quadprog
