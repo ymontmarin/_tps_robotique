@@ -1,0 +1,12 @@
+for it in range(1000):
+    t = it*dt
+    M = pin.crba(robot.model, robot.data, q)
+    b = pin.nle(robot.model, robot.data, q, vq)
+    a = - inv(M) @ b
+
+    vq += aq * dt
+    q = pin.integrate(robot.model, q, vq * dt)
+    
+    if it%20==0: 
+        viz.display(q)
+        time.sleep(20*dt)
