@@ -1,4 +1,4 @@
-﻿# Robotic course, XXXX, 20YY
+# Robotic course, XXXX, 20YY
 
 This repository contains the exercices for the robotics class at XXXX, 20YY.
 The exercices are organized by notebook. Each notebook corresponds to one chapter of the class.

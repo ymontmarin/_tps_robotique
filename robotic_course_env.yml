@@ -4,6 +4,7 @@ channels:
   - defaults
 dependencies:
   - python=3.9
+  - numpy=2.22
   - pinocchio
   - meshcat-python
   - example-robot-data
@@ -13,3 +14,7 @@ dependencies:
   - scipy
   - quadprog
   - crocoddyl
+  - keras
+  - tensorflow
+  - gym
+  - tqdm

@@ -1,8 +1,11 @@
 ## TODO
-- Update from running TPs
+- Update from 2022 running TPs
 - Clear all output for pushed version
+- Add LQR finite horizon
+- Add GJK-2D
+- Add Other planning algorithm
 
-## For future work
+## For deployments
 - create virgin repo and copy all the content
 - do
 ```
