@@ -48,7 +48,7 @@ class CollisionWrapper:
         J2=pin.getJointJacobian(self.rmodel,self.rdata,joint2,pin.ReferenceFrame.LOCAL)
         Jc1=cMj1.action@J1
         Jc2=cMj2.action@J2
-        J = (Jc1-Jc2)[2,:]
+        J = (Jc2-Jc1)[2,:]
         return J
 
     def _getCollisionJdotQdot(self,col,res):
@@ -82,7 +82,7 @@ class CollisionWrapper:
         if collisions is None: collisions = self.getCollisionList()
         if len(collisions)==0: return np.array([])
         a0 = np.vstack([ self._getCollisionJdotQdot(c,r) for (i,c,r) in collisions ])
-        return a0
+        return a0.squeeze()
 
     def getCollisionDistances(self,collisions=None):
         if collisions is None: collisions = self.getCollisionList()
@@ -184,8 +184,6 @@ if __name__ == "__main__":
         col.displayCollisions()
         p = cols[0][1]
         ci = cols[0][2].getContact(0)
-        print(robot.gmodel.geometryObjects[p.first].name,robot.gmodel.geometryObjects[p.second].name)
-        print(ci.pos)
         
         import pickle
         with open('/tmp/bug.pickle', 'wb') as file:
@@ -196,4 +194,3 @@ if __name__ == "__main__":
 
     dist=col.getCollisionDistances()
     J = col.getCollisionJacobian()
-    

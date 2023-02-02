@@ -126,12 +126,6 @@ class RobotHand:
         for (n1,n2) in pairs:
             self.gmodel.addCollisionPair(pin.CollisionPair(self.gmodel.getGeometryId('world/'+n1),
                                                            self.gmodel.getGeometryId('world/'+n2)))
-
-        
-    def addCapsule(self,name,joint,placement,radius,length,color=[1,1,0.78,1]):
-        caps = Capsule(name,joint,radius*0.99,length,placement)
-        caps.meshColor = np.array([1.]*4)
-        self.gmodel.addGeometryObject(caps)
         
     def createHand(self,rootId=0,jointPlacement=None):
         color   = [red,green,blue,transparency] = [1,1,0.78,1.0]
@@ -286,6 +280,7 @@ class RobotHand:
         for i in range(fromContactRef,self.maxContact):
             name='world/cpatch%d'%i
             self.viewer.setVisibility(name,'OFF')
+
     def displayContact(self,contact,contactRef=0,refresh=False):
         '''
         Display a small red disk at the position of the contact, perpendicular to the

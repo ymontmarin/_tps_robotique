@@ -1,18 +1,20 @@
-# Random velocity of the robot driving the movement
+q = q_touch.copy()
 vq = np.array([2., 0, 0, 4., 0, 0])
+idx = 6
 
-idx = robot.index('wrist_3_joint')
-o_eff = robot.placement(q, idx).translation  # Position of end-eff wrt world at current configuration
+p = robot.placement(q, idx)
+o_eff = p.translation  # Position of end-eff wrt world at current configuration
 o_ball = q_ball[:3]  # Position of ball wrt world
-eff_ball = o_ball - o_eff  # Position of ball wrt eff
+o_eff_ball = o_ball - o_eff  # Position of ball wrt eff in world coordinate
+eff_eff_ball = p.rotation.T @ o_eff_ball  # Position of ball wrt eff in local coordinate
 
-for i in range(50):
+for i in range(200):
     # Chose new configuration of the robot
     q += vq / 40
     q[2] = 1.71 + math.sin(i * 0.05) / 2
 
     # Gets the new position of the ball
-    o_ball = robot.placement(q, idx) * eff_ball
+    o_ball = robot.placement(q, idx) * eff_eff_ball
 
     # Display new configuration for robot and ball
     viz.applyConfiguration(ballID, o_ball.tolist() + [1, 0, 0, 0])

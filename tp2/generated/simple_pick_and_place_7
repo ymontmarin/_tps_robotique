@@ -1,9 +1,8 @@
-# Random velocity of the robot driving the movement
+q = qopt.copy()
 vq = np.array([2., 0, 0, 4., 0, 0])
+idx = 6
 
-idx = robot.index('wrist_3_joint')
 oMeff = robot.placement(q, idx)  # Placement of end-eff wrt world at current configuration
-oMbox = pin.XYZQUATToSE3(q_box)  # Placement of box     wrt world
 effMbox = oMeff.inverse() * oMbox  # Placement of box     wrt eff
 
 for i in range(100):

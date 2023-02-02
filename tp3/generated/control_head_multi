@@ -2,23 +2,24 @@ q = q0.copy()
 herr = [] # Log the value of the error between tool and goal.
 herr2 = [] # Log the value of the error between gaze and ball.
 # Loop on an inverse kinematics for 200 iterations.
-for i in range(200):  # Integrate over 2 second of robot life
+for i in range(500):  # Integrate over 2 second of robot life
 
+    # Run the algorithms that outputs values in robot.data
     pin.framesForwardKinematics(robot.model,robot.data,q)
     pin.computeJointJacobians(robot.model,robot.data,q)
+
+    # Tool task
+    oMtool = robot.data.oMf[IDX_TOOL]
+    tool_Jtool = pin.computeFrameJacobian(robot.model,robot.data,q,IDX_TOOL,pin.LOCAL)
+    tool_nu = pin.log(oMtool.inverse()*oMgoal).vector
 
     # Gaze task
     oMgaze = robot.data.oMf[IDX_GAZE]
     o_Jgaze3 = pin.computeFrameJacobian(robot.model, robot.data, q, IDX_GAZE,pin.LOCAL_WORLD_ALIGNED)[:3,:]
     o_GazeBall = oMgaze.translation-ball
 
-    # Tool task
-    oMtool = robot.data.oMf[IDX_TOOL]
-    o_Jtool3 = pin.computeFrameJacobian(robot.model,robot.data,q,IDX_TOOL,pin.LOCAL_WORLD_ALIGNED)[:3,:]
-    o_TG = oMtool.translation-oMgoal.translation
-    
-    vq = -pinv(o_Jtool3) @ o_TG
-    Ptool = np.eye(robot.nv)-pinv(o_Jtool3) @ o_Jtool3
+    vq = pinv(tool_Jtool) @ tool_nu
+    Ptool = np.eye(robot.nv)-pinv(tool_Jtool) @ tool_Jtool
     vq += pinv(o_Jgaze3 @ Ptool) @ (-o_GazeBall - o_Jgaze3 @ vq)
 
     q = pin.integrate(robot.model,q, vq * DT)

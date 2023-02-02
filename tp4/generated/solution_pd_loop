@@ -1,17 +1,18 @@
 hq    = []   ### For storing the logs of measured trajectory q
 hqdes = []   ### For storing the logs of desired trajectory qdes
-for i in range(10000):
-    t = i*dt
+for it in range(N_steps):
+    t = it*dt
 
     # Compute the model.
     M = pin.crba(robot.model, robot.data, q)
     b = pin.nle(robot.model, robot.data, q, vq)
 
     # Compute the PD control.
-    tauq = -Kp*(q-qdes(t)) - Kv*(vq-qdes.velocity(t)) + qdes.acceleration(t)
-
+    tauq = -Kp*(q-qdes(t)) - Kv*(vq-qdes.velocity(t)) + alpha * qdes.acceleration(t)
+    tauq_frottement = -Kf * vq
+    
     # Simulated the resulting acceleration (forward dynamics
-    aq = inv(M) @ (tauq - b)
+    aq = inv(M) @ (tauq_frottement + tauq - b)
 
     # Integrate the acceleration.
     vq += aq * dt
@@ -19,11 +20,10 @@ for i in range(10000):
 
     # Display every TDISP iterations.
     TDISP = 50e-3    # Display every 50ms
-    if not i % int(TDISP/dt):  # Only display once in a while ...
+    if not it % int(TDISP/dt):  # Only display once in a while ...
         viz.display(q)
         time.sleep(TDISP)
 
     # Log the history.
     hq.append(q.copy())
     hqdes.append(qdes.copy())
-

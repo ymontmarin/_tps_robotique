@@ -1,3 +1,4 @@
+
 q0 = np.zeros(NQ)  # set the correct values here
 q0[0] = -0.375
 q0[1] = -1.2

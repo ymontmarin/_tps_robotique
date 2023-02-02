@@ -1,22 +1,13 @@
-# Add a vizualisation for the tip of the arm.
-tipID = "world/blue"
-viz.addBox(tipID, [.08] * 3, [.2, .2, 1., .5])
-#
-# OPTIM 3D #########################################################
-#
-
 def cost(q):
     '''Compute score from a configuration'''
-    p = robot.placement(q, 6).translation
-    return norm(p - target)**2
+    m = robot.framePlacement(q, 22)
+    p = m.translation
+    offset = m.rotation[:, 2] * radius
+    return norm(p +  offset - target)**2
 
 
 def callback(q):
-    viz.applyConfiguration(ballID, target.tolist() + [0, 1, 0, 0])
-    viz.applyConfiguration(tipID, robot.placement(q, 6))
     viz.display(q)
     time.sleep(1e-2)
 
-
-target = np.array([0.5, 0.1, 0.2])  # x,y,z
-qopt = fmin_bfgs(cost, robot.q0, callback=callback)
+q_touch = fmin_bfgs(cost, robot.q0, callback=callback)

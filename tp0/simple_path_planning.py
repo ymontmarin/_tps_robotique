@@ -55,7 +55,8 @@ def qrand(check=False):
     '''
     while True:
         q = np.random.rand(2)*6.4-3.2  # sample between -3.2 and +3.2.
-        if not check or not coll(q): return q
+        if not check or not coll(q):
+            return q
 # %end_jupyter_snippet
 
 # %jupyter_snippet colldist
@@ -102,7 +103,6 @@ def randomDescent(q0 = None):
                viz.display(q)                       # ... display it
                time.sleep(5e-3)                     # ... and sleep for a short while
      return hist
-randomDescent();
 # %end_jupyter_snippet
 
 ################################################################################

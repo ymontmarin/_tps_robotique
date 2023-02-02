@@ -1,0 +1,77 @@
+state = crocoddyl.StateMultibody(robot_model)
+# The state object containt info about the configspace, the constraint, the velocity, the kinematic values and everything
+
+# State is quite abstract, to have a real solvable OCP we need to define somme cost associated to this model
+# We also need to decide the actual dynamic we will follow (called actuation), it means a solver that will be ourf(x,u) AND a way to descretize it
+
+rcms = []
+tcms = []
+
+for i in range(4):
+    runningCostModel = crocoddyl.CostModelSum(state)  # The state will remain the same during running 
+    terminalCostModel = crocoddyl.CostModelSum(state)  # And also for final state
+
+    ### Cost for reaching the target
+    pref = crocoddyl.FrameTranslation(FRAME_TIP, goals[i])
+    goalTrackingCost = crocoddyl.CostModelFrameTranslation(state, pref)
+
+    ### Cost for regularizing the state about robot_model.x0, running AND terminal
+    weights=crocoddyl.ActivationModelWeightedQuad(np.array([1,1,1,1,1,1,1, 1,1,1,1,2,2,2.]))
+    xRegCost = crocoddyl.CostModelState(state,weights,robot_model.x0)
+    weightsT=crocoddyl.ActivationModelWeightedQuad(np.array([.01,.01,.01,.01,.01,.01,.01, 1,1,1,1,2,2,2.]))
+    xRegCostT = crocoddyl.CostModelState(state,weightsT,robot_model.x0)
+
+    ### Cost for keeping the control low: around zeros with uniform weights
+    uRegCost = crocoddyl.CostModelControl(state)
+
+
+    runningCostModel.addCost("gripperPose", goalTrackingCost, .001)  # addCost is a method of CostModelSum that take another CostModel
+    runningCostModel.addCost("xReg", xRegCost, 1e-3)  # We also weight the sum of cost
+    runningCostModel.addCost("uReg", uRegCost, 1e-6)
+    terminalCostModel.addCost("gripperPose", goalTrackingCost, 10)
+    terminalCostModel.addCost("xReg", xRegCostT, .01)
+    terminalCostModel.addCost("uReg", xRegCostT, 1e-6)
+
+    rcms.append(runningCostModel)
+    tcms.append(terminalCostModel)
+
+
+actuationModel = crocoddyl.ActuationModelFull(state)
+dt = 1e-2
+# A step in the running step
+## We use the freefall forward dynamic as dotx = f(x,u) it could be a contact one (as in prev TP) and so on
+### It is the differential model chosen around the state
+## We precise the duration of the step dt
+## We precise the integration scheme we use 
+### It is the integrated model chosen around the differential model
+## We precise which cost is used during this step
+def make_running_model(rcm):
+    runningModel = crocoddyl.IntegratedActionModelEuler(
+        crocoddyl.DifferentialActionModelFreeFwdDynamics(state, actuationModel, rcm), dt)
+    runningModel.differential.armature = robot_model.armature
+    return runningModel
+
+def make_terminal_model(tcm):
+    runningModel = crocoddyl.IntegratedActionModelEuler(
+        crocoddyl.DifferentialActionModelFreeFwdDynamics(state, actuationModel, tcm), 0.)
+    runningModel.differential.armature = robot_model.armature
+    return runningModel
+
+terminalModel = crocoddyl.IntegratedActionModelEuler(
+    crocoddyl.DifferentialActionModelFreeFwdDynamics(state, actuationModel, terminalCostModel), 0.)
+terminalModel.differential.armature = robot_model.armature
+
+T = 100
+T_inter = 1
+
+def create_problem(n):
+    rmseq = []
+    for i in range(n - 1):
+        rmseq += [make_running_model(rcms[i])] * T
+        rmseq += [make_running_model(tcms[i])] * T_inter
+    rmseq += [make_running_model(rcms[n-1])] * T
+    tm = make_terminal_model(tcms[n-1])
+    return crocoddyl.ShootingProblem(robot_model.x0, rmseq, tm)
+
+ddp = crocoddyl.SolverDDP(create_problem(4))
+ddp.solve()

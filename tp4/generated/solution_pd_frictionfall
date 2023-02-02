@@ -6,7 +6,7 @@ for it in range(N_steps):
     b = pin.nle(robot.model, robot.data, q, vq)
 
     # Force that apply
-    tauq = np.zeros(robot.model.nv)
+    tauq = - 0.1 * vq
 
     # PFD
     aq = inv(M) @ (tauq - b)

@@ -1,6 +1,6 @@
 q = q0.copy()
 herr = []
-for i in range(200):  # Integrate over 2 second of robot life
+for i in range(500):  # Integrate over 2 second of robot life
 
     # Run the algorithms that outputs values in robot.data
     pin.framesForwardKinematics(robot.model,robot.data,q)
