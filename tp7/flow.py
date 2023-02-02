@@ -13,5 +13,3 @@ def plotFlow(env,policy,x2d):
 
     flow=np.array( [ np.concatenate(a) for a in flow ])
     h = plt.quiver(flow[:,0],flow[:,1],flow[:,2],flow[:,3])
-    return h
-    
