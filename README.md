@@ -5,30 +5,37 @@ The exercices are organized by notebook. Each notebook corresponds to one chapte
 The notebooks are in Python and based on the software [Pinocchio](https://github.com/stack-of-tasks/pinocchio).
 
 ## Set up
+
 ### Clone this repository
-Using git and ssh
+
+Using Git via SSH:
+
 ```bash
 git clone git@github.com:ymontmarin/XXXX_20YY_tps_robotic.git
 ```
-or https:
+
+Or via HTTPS:
+
 ```bash
 git clone https://github.com/ymontmarin/XXXX_20YY_tps_robotic.git
 ```
 
 ### Install miniconda
-On Linux or OSX only: https://docs.conda.io/en/latest/miniconda.html
-Only a little snippet is applied tou your home .bashrc, everything else will be segmented !
 
-Or use Anaconda on Windows and use conda prompt insteal of a terminal.
+- Linux: https://docs.conda.io/en/latest/miniconda.html
+- macOS: https://docs.conda.io/en/latest/miniconda.html
+- Windows: https://www.anaconda.com/download/
 
-Go into the repository folder.
+Only a little snippet is applied to your home .bashrc, everything else will be segmented!
 
-Open a terminal.
+- Go to your local copy of the repository.
+- Open a terminal.
+- Create and activate conda environment:
 
-Create and activate conda environment:
 ```bash
 conda env create -f robotic_course_env.yml
 ```
+
 From now on, when you want to work on the TPs you only need to do:
 ```bash
 conda activate robotic_course
