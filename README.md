@@ -44,10 +44,16 @@ From there on, to work on a tutorial notebook, you only need to activate the env
 conda activate robotics_course
 ```
 
-Then launch the notebook with:
+Then launch JupyterLab with:
 
 ```bash
 jupyter-lab
+```
+
+Or launch a notebook directly with ``jupyter-notebook``, for instance for the first one:
+
+```bash
+jupyter-notebook 0_introduction_to_numerical_robotics.ipynb
 ```
 
 The notebook will be accessible from your web browser at [localhost:8888](http://localhost:8888).
