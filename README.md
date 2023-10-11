@@ -50,12 +50,6 @@ Then launch JupyterLab with:
 jupyter-lab
 ```
 
-Or launch a notebook directly with ``jupyter-notebook``, for instance for the first one:
-
-```bash
-jupyter-notebook 0_introduction_to_numerical_robotics.ipynb
-```
-
 The notebook will be accessible from your web browser at [localhost:8888](http://localhost:8888).
 
 Meshcat visualisation can be access in full page in `localhost:700N/static/` where N denotes the Nth meshcat instance created with the running kernel.
