@@ -1,4 +1,4 @@
-name: robotic_course
+name: robotics_course
 channels:
   - conda-forge
   - defaults
