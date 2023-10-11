@@ -44,7 +44,7 @@ From there on, to work on a tutorial notebook, you only need to activate the env
 conda activate robotics_course
 ```
 
-Then launch JupyterLab with:
+Then launch the notebook with:
 
 ```bash
 jupyter-lab
