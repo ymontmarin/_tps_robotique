@@ -1,47 +1,65 @@
 hq_c    = []   ### For storing the logs of measured trajectory q
 hqdes_c = []   ### For storing the logs of desired trajectory qdes
 
-already_contact = set()  # Track contact
+tracked_collisions_id = set()  # Track contact
 
 for it in range(N_steps):
     t = it*dt
 
-    # Compute the model.
-    M = pin.crba(robot.model, robot.data, q)
-    b = pin.nle(robot.model, robot.data, q, vq)
+    # Compute the dynamics quantities for the model
+    M = pin.crba(robot.model, robot.data, q)  # Inertie matrix
+    b = pin.nle(robot.model, robot.data, q, vq)  # Coriolis term
 
-    # Compute the PD control.
-    tauq = - Kp * (q - qdes(t)) - Kv * (vq - qdes.velocity(t)) + alpha * qdes.acceleration(t)
-    tauq_frottement = - Kf * vq
+    # Compute the PD torque control we apply in actuators order to follow qdes
+    tauq_control = - Kp * (q - qdes(t)) - Kv * (vq - qdes.velocity(t)) + alpha * qdes.acceleration(t)
+    # Compute the friction torque
+    tauq_friction = - Kf * vq
     
-    # Simulated the resulting acceleration (forward dynamics
-    aq0 = inv(M) @ (tauq_frottement + tauq - b)
+    # Simulate the resulting free acceleration (forward dynamics)
+    # The total torque is the control torque and the friction torque
+    # It corresponds to the acceleration qddot if there is no contact
+    aq0 = inv(M) @ (tauq_friction + tauq_control - b)
 
-    # Check collision
+    # Check collision to calculate the real acceleration that respects the contacts
     colwrap.computeCollisions(q, vq)
     raw_collisions = colwrap.getCollisionList()
     raw_dist = colwrap.getCollisionDistances(raw_collisions)
 
-    # Keep only real colision
+    # Keep only the significative collisions because of numerical errors
     collisions = [c for c, d in zip(raw_collisions, raw_dist) if d <= -1e-4]
 
     if not collisions:
+        # No real collision so acceleration is the free acceleration
         aq = aq0
-        already_contact = set()
+        # There is no contact so we reset the tracker
+        tracked_collisions_id = set()
     else:
-        dist = colwrap.getCollisionDistances(collisions)
+        # extract dists, J_c et Jdotqdot for the actual collisions
+        dists = colwrap.getCollisionDistances(collisions)
         J = colwrap.getCollisionJacobian(collisions)
         JdotQdot = colwrap.getCollisionJdotQdot(collisions)
 
-        # Update contact tracking and nullify velocity of new contact
-        col_id = [e[0] for e in collisions]
-        new_col_idx = [i for i, e in enumerate(col_id) if e not in already_contact]
-        already_contact = set(col_id)
-        if new_col_idx:
-            J_proj = np.stack([J[i] for i in new_col_idx], axis=0)
+        # Use the id of collisions to identify the new collisions
+        # for a collision col, col[0] is a unique identifier
+        collisions_id = [col[0] for col in collisions]
+        # get the pyidx (i.e., the python index) for collision with id (i.e. col[0]) not already tracked
+        new_collisions_pyidx = [
+            pyidx
+            for pyidx, col_id in enumerate(collisions_id)
+            if col_id not in tracked_collisions_id
+        ]
+        # Update our tracker for the next iteration
+        tracked_collisions_id = set(collisions_id)
+
+        # For the new collisions, adapt vq such that vc is 0
+        if new_collisions_pyidx:
+            # We extract the line of J only for the new collisions
+            J_proj = np.stack([J[i] for i in new_collisions_pyidx], axis=0)
+            # And we use pinv to project vq in the kernel of J_proj such that vs=0
             vq -= (pinv(J_proj) @ J_proj) @ vq
 
-        # Find real acceleration using Gauss principle
+        # Construct the minimization problem associated with the Gauss principle
+        # The constraint is ac >= PD(e, vc) instead of e >= 0
         A = M
         b = M @ aq0
         C = J
