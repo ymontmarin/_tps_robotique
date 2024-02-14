@@ -2,8 +2,9 @@ viz.applyConfiguration(boxID, oMbox)
 
 def cost(q):
     '''Compute score from a configuration'''
-    M = robot.framePlacement(q, 22)
-    return norm(pin.log(M.inverse() * oMtarget).vector)
+    oMtip = robot.framePlacement(q, 22)
+    # Align tip placement and facet placement
+    return norm(pin.log(oMtip.inverse() * oMtarget).vector)
 
 
 def callback(q):

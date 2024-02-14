@@ -62,9 +62,9 @@ for it in range(N_steps):
         # The constraint is ac >= PD(e, vc) instead of e >= 0
         A = M
         b = M @ aq0
-        C = J
+        C = J.T
         d = - JdotQdot - Kp_c * dist - Kv_c * J @ vq
-        [aq,cost,_,niter,lag,iact] = quadprog.solve_qp(A,b,C.T,d)  # Notice that C.T is passed instead of C
+        [aq,cost,_,niter,lag,iact] = quadprog.solve_qp(A,b,C,d)
 
     # Integrate the acceleration.
     vq += aq * dt
