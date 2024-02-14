@@ -3,8 +3,8 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.9
-  - numpy=1.22
+  - python=3.10
+  - numpy
   - pinocchio
   - meshcat-python
   - example-robot-data
@@ -18,3 +18,10 @@ dependencies:
   - tensorflow
   - gym
   - tqdm
+  - gymnasium
+  - imageio
+  - mujoco=2.3.7
+  - rich
+  - stable-baselines3
+  - tensorboard
+  - pip
