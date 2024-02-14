@@ -38,7 +38,7 @@ for it in range(N_steps):
         dists = colwrap.getCollisionDistances(collisions)
         J = colwrap.getCollisionJacobian(collisions)
         JdotQdot = colwrap.getCollisionJdotQdot(collisions)
-
+        
         # Use the id of collisions to identify the new collisions
         # for a collision col, col[0] is a unique identifier
         collisions_id = [col[0] for col in collisions]
@@ -62,9 +62,10 @@ for it in range(N_steps):
         # The constraint is ac >= PD(e, vc) instead of e >= 0
         A = M
         b = M @ aq0
-        C = J.T
-        d = - JdotQdot - Kp_c * dist - Kv_c * J @ vq
-        [aq,cost,_,niter,lag,iact] = quadprog.solve_qp(A,b,C,d)
+        C = J
+        d = - JdotQdot - Kp_c * dists - Kv_c * J @ vq
+        
+        [aq,cost,_,niter,lag,iact] = quadprog.solve_qp(A,b,C.T,d)
 
     # Integrate the acceleration.
     vq += aq * dt

@@ -68,7 +68,7 @@ class CollisionWrapper:
 
         a1 = self.rdata.a[joint1]
         a2 = self.rdata.a[joint2]
-        a = (cMj1*a1-cMj2*a2).linear[2]
+        a = (cMj1 * a1 - cMj2 * a2).linear[2]
         return a
         
     def getCollisionJacobian(self,collisions=None):
@@ -79,10 +79,12 @@ class CollisionWrapper:
         return J
 
     def getCollisionJdotQdot(self,collisions=None):
-        if collisions is None: collisions = self.getCollisionList()
-        if len(collisions)==0: return np.array([])
-        a0 = np.vstack([ self._getCollisionJdotQdot(c,r) for (i,c,r) in collisions ])
-        return a0.squeeze()
+        if collisions is None:
+            collisions = self.getCollisionList()
+        if len(collisions)==0:
+            return np.array([])
+        a0 = np.array([self._getCollisionJdotQdot(c,r) for (i,c,r) in collisions])
+        return a0
 
     def getCollisionDistances(self,collisions=None):
         if collisions is None: collisions = self.getCollisionList()
