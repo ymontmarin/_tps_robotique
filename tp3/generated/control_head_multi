@@ -20,7 +20,7 @@ for i in range(500):  # Integrate over 2 second of robot life
 
     vq = pinv(tool_Jtool) @ tool_nu
     Ptool = np.eye(robot.nv)-pinv(tool_Jtool) @ tool_Jtool
-    vq += pinv(o_Jgaze3 @ Ptool) @ (-o_GazeBall - o_Jgaze3 @ vq)
+    vq += Ptool @ pinv(o_Jgaze3 @ Ptool) @ (-o_GazeBall - o_Jgaze3 @ vq)
 
     q = pin.integrate(robot.model,q, vq * DT)
     viz.display(q)
